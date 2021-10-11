@@ -1,4 +1,4 @@
-# CharacterCreater
+# CharacterCreator
 
 ## Project Overview
 ***
