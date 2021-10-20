@@ -8,7 +8,8 @@ export default createStore({
   state: {
     accessToken: null,
     refreshToken: null,
-    data: ''
+    data: '',
+    username: null
   },
   plugins:
     [createPersistedState()],
@@ -16,6 +17,13 @@ export default createStore({
     updateStorage(state, { access, refresh }) {
       state.accessToken = access
       state.refreshToken = refresh
+    },
+    destroyToken(state) {
+      state.accessToken = null
+      state.refreshToken = null
+    },
+    updateUsername(state, name) {
+      state.username = name
     }
   },
   getters: {
@@ -32,8 +40,7 @@ export default createStore({
         })
           .then(response => {
             context.commit('updateStorage', { access: response.data.access, refresh: response.data.refresh })
-            console.log(this.accessToken)
-            console.log(this.refreshToken)
+            context.commit('updateUsername', { name: user.username })
             resolve()
           })
           .catch(err => {

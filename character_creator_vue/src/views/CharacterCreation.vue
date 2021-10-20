@@ -116,17 +116,32 @@
         aria-labelledby="character-tab"
       >
         <div>
-          <div :key="character" v-for="character in data">
-            {{ character }}
-          </div>
           <label for="name">Name</label>
           <input id="name" type="text" />
           <label for="characterLevel">Level</label>
           <input id="characterLevel" type="number" />
           <label for="age">Age</label>
           <input id="age" type="number" />
-          <label for="sex">Sex</label>
-          <input id="sex" type="radio" />
+          <label for="gender">Gender </label>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="Female"
+            />
+            <label class="form-check-label" for="Female"> Female </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="gender"
+              id="male"
+              checked
+            />
+            <label class="form-check-label" for="male"> Male </label>
+          </div>
           <label for="height">Height</label>
           <input id="height" type="number" />
           <label for="weight">Weight</label>
@@ -166,11 +181,11 @@
         </div>
 
         <div class="" v-if="subRaces">
-          <label for="subraceSelection">Select Subrace</label>
+          <label for="subRaceSelection">Select Subrace</label>
           <select
             class="form-select"
-            v-model="subraceSelection"
-            id="subraceSelection"
+            v-model="subRaceSelection"
+            id="subRaceSelection"
           >
             <option v-bind:key="subRace.name" v-for="subRace in subRaces">
               {{ subRace.name }}
@@ -179,11 +194,11 @@
         </div>
 
         <div class="" v-else-if="dragonAncestory">
-          <label for="subraceSelection">Select Dragon Ancestory</label>
+          <label for="subRaceSelection">Select Dragon Ancestory</label>
           <select
             class="form-select"
-            v-model="subraceSelection"
-            id="subraceSelection"
+            v-model="subRaceSelection"
+            id="subRaceSelection"
           >
             <option v-bind:key="dragon.name" v-for="dragon in dragonAncestory">
               {{ dragon.name }}
@@ -206,7 +221,11 @@
               name="classes"
               v-bind:value="clas.name"
               v-model="classSelection"
-              @change="getSubClass"
+              @change="
+                getSubClass();
+                getProficiencyChoices();
+                getEquipment();
+              "
             />
             <label class="form-check-label" for="clas.name">
               {{ clas.name }}
@@ -219,7 +238,7 @@
             <input
               class="form-check-input"
               type="radio"
-              name="classes"
+              name="subClasses"
               v-bind:value="subClass.name"
               v-model="subClassSelection"
             />
@@ -229,7 +248,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Ability Scores tab -->
       <div
         class="tab-pane fade"
         id="abilityScores"
@@ -265,6 +284,7 @@
           </span>
         </div>
       </div>
+      <!-- Background tab -->
       <div
         class="tab-pane fade"
         id="background"
@@ -294,12 +314,35 @@
           </div>
         </div>
       </div>
+      <!-- proficiency tab -->
       <div
         class="tab-pane fade"
         id="proficiency"
         role="tabpanel"
         aria-labelledby="proficiency-tab"
-      ></div>
+      >
+        <div>
+          <p v-if="proficiencyChoices">
+            Select {{ amountOfProficiencies }} Proficiencies
+          </p>
+          <span :key="proficiency" v-for="proficiency in proficiencyChoices">
+            <input
+              class="mx-2"
+              type="checkbox"
+              v-bind:value="proficiency.name.substr(7)"
+              v-model="proficiencySelection"
+              v-bind:disabled="
+                proficiencySelection.length === amountOfProficiencies &&
+                proficiencySelection.indexOf(proficiency.name.substr(7)) == -1
+              "
+            />
+            <label for="proficiency.name">{{
+              proficiency.name.substr(7)
+            }}</label>
+          </span>
+        </div>
+      </div>
+      <!-- Spells tab -->
       <div
         class="tab-pane fade"
         id="spells"
@@ -308,14 +351,32 @@
       >
         spells
       </div>
+      <!-- Equipment tab -->
       <div
         class="tab-pane fade"
         id="equipment"
         role="tabpanel"
         aria-labelledby="equipment-tab"
+        :key="equip"
+        v-for="equip in equipments"
       >
-        equipment
+        <p>Select {{ equip.choose }} from the list</p>
+        <div :key="item" v-for="item in equip.from">
+          {{ item.equipment.name }}
+          {{ item.equipment_option }}
+        </div>
+        {{ equip.from[0].equipment.name }}
       </div>
+    </div>
+    <hr />
+    <div class="text-center">
+      <button
+        :disabled="!this.$store.getters.loggedIn"
+        class="btn btn-dark"
+        type="submit"
+      >
+        Create Character
+      </button>
     </div>
   </div>
 </template>
@@ -373,7 +434,8 @@ export default {
       amountOfProficiencies: 1,
       languageToolProficiencies: null,
       cantrips: null,
-      equipment: null,
+      equipments: null,
+      item: null,
 
       name: null,
       characterLevel: 1,
@@ -407,7 +469,7 @@ export default {
       },
       languageToolProficienciesSelection: null,
       cantripsSelection: null,
-      equipment: null,
+      equipmentSelection: null,
       testapi: null,
     };
   },
@@ -488,6 +550,33 @@ export default {
         this.backgrounds = response.data.results;
       });
     },
+    getProficiencyChoices() {
+      this.amountOfProficiencies = [];
+      axios({
+        method: "get",
+        url: url + "classes/" + this.classSelection.toLowerCase(),
+      }).then((response) => {
+        if (this.classSelection === "Monk") {
+          this.proficiencyChoices = response.data.proficiencySelection[2].from;
+          this.amountOfProficiencies =
+            response.data.proficiencySelection[2].choose;
+        } else {
+          this.proficiencyChoices = response.data.proficiency_choices[0].from;
+          this.amountOfProficiencies =
+            response.data.proficiency_choices[0].choose;
+        }
+      });
+      console.log(this.amountOfProficiencies);
+    },
+    getEquipment() {
+      axios({
+        method: "get",
+        url: url + "classes/" + this.classSelection.toLowerCase(),
+      }).then((response) => {
+        this.equipments = response.data.starting_equipment_options;
+      });
+      console.log(this.equipment);
+    },
     raceBonus() {
       let first = this.halfElfAbilities[0];
       let second = this.halfElfAbilities[1];
@@ -550,6 +639,46 @@ export default {
           this.charStats.cha += 2;
           this.charStats.int += 2;
       }
+    },
+    createCharacter() {
+      axios({
+        method: "post",
+        url: "http://127.0.0.1:8000/characters/",
+        data: {
+          name: this.name,
+          characterLevel: this.characterLevel,
+          age: this.age,
+          sex: this.sex,
+          height: this.height,
+          weight: this.weight,
+          hair: this.hair,
+          eye: this.eye,
+          skinColor: this.skinColor,
+          backstory: this.backstory,
+          armorClass: this.armorClass,
+          hitPoints: this.hitPoints,
+          Speed: this.Speed,
+          passivePerception: this.passivePerception,
+          darkVision: this.darkVision,
+          background: this.background,
+          raceSelection: this.raceSelection,
+          subRaceSelection: this.subRaceSelection,
+          classSelection: this.classSelection,
+          subClassSelection: this.subClassSelection,
+          alignmentSelection: this.alignmentSelection,
+          chosenProficiencies: this.proficiencySelection,
+          cha: this.abilityScores.cha,
+          con: this.abilityScores.con,
+          dex: this.abilityScores.dex,
+          int: this.abilityScores.int,
+          str: this.abilityScores.str,
+          wis: this.abilityScores.wis,
+          languageToolProficienciesSelection:
+            languageToolProficienciesSelection,
+          cantripsSelection: cantripsSelection,
+          equipment: equipmentSelection,
+        },
+      });
     },
   },
   created() {
