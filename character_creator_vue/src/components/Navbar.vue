@@ -2,7 +2,9 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#"></a>
-      <h3 v-if="this.$store.getters.loggedIn">Hello, {{ data.username }}</h3>
+      <!-- <h3 v-if="this.$store.getters.loggedIn">
+        Hello, {{ username[0].username }}
+      </h3> -->
 
       <button
         class="navbar-toggler"
@@ -56,14 +58,24 @@ import axios from "axios";
 import { mapState } from "vuex";
 export default {
   name: "Navbar",
-  computed: mapState(["data"]),
+  computed: mapState(["data", "username"]),
   methods: {
-    getUser() {
-      axios({
-        method: "get",
-        url: "http://127.0.0.1:5050/",
-      });
-    },
+    // getUser() {
+    //   axios({
+    //     method: "get",
+    //     url: "http://127.0.0.1:5050/user/",
+    //     headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
+    //   })
+    //     .then((response) => {
+    //       this.$store.state.username = response.data;
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // },
+  },
+  created() {
+    // this.getUser();
   },
 };
 </script>

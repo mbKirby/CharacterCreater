@@ -9,7 +9,8 @@ export default createStore({
     accessToken: null,
     refreshToken: null,
     data: '',
-    username: null
+    username: '',
+    test: null,
   },
   plugins:
     [createPersistedState()],
@@ -18,13 +19,14 @@ export default createStore({
       state.accessToken = access
       state.refreshToken = refresh
     },
+    updateAccess(state, access) {
+      state.accessToken = access
+    },
     destroyToken(state) {
       state.accessToken = null
       state.refreshToken = null
+      state.username = null
     },
-    updateUsername(state, name) {
-      state.username = name
-    }
   },
   getters: {
     loggedIn(state) {
@@ -32,15 +34,27 @@ export default createStore({
     }
   },
   actions: {
+    refreshToken() {
+      return new Promise((resolve, reject) => {
+        getAPI.post("/api-token-refresh/", {
+          refresh: context.state.refreshToken
+        }).then(response => {
+          context.commit('updateAccess', response.data.access)
+          resolve(response.data.access)
+        })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
     userLogin(context, user) {
       return new Promise((resolve, reject) => {
-        getAPI.post('api-token/', {
+        getAPI.post('/api-token/', {
           username: user.username,
           password: user.password
         })
           .then(response => {
             context.commit('updateStorage', { access: response.data.access, refresh: response.data.refresh })
-            context.commit('updateUsername', { name: user.username })
             resolve()
           })
           .catch(err => {

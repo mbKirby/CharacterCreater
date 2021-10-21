@@ -116,44 +116,69 @@
         aria-labelledby="character-tab"
       >
         <div>
-          <label for="name">Name</label>
-          <input id="name" type="text" />
-          <label for="characterLevel">Level</label>
-          <input id="characterLevel" type="number" />
-          <label for="age">Age</label>
-          <input id="age" type="number" />
-          <label for="gender">Gender </label>
-          <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="gender"
-              id="Female"
-            />
-            <label class="form-check-label" for="Female"> Female </label>
+          {{ userId }}
+          {{ username }}
+          <div>
+            <label for="name">Name</label>
+            <input v-model="name" id="name" type="text" />
           </div>
-          <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="gender"
-              id="male"
-              checked
-            />
-            <label class="form-check-label" for="male"> Male </label>
+          <div>
+            <label for="characterLevel">Level</label>
+            <input v-model="characterLevel" id="characterLevel" type="number" />
           </div>
-          <label for="height">Height</label>
-          <input id="height" type="number" />
-          <label for="weight">Weight</label>
-          <input id="weight" type="number" />
-          <label for="hair">Hair color</label>
-          <input id="hair" type="text" />
-          <label for="eye">Eye color</label>
-          <input id="eye" type="text" />
-          <label for="skinColor">Skin color</label>
-          <input id="skinColor" type="text" />
-          <label for="backstory">Backstory</label>
-          <input id="backstory" type="textfield" />
+          <div>
+            <label for="age">Age</label>
+            <input v-model="age" id="age" type="number" />
+          </div>
+          <div>
+            <label for="gender">Gender </label>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="gender"
+                id="Female"
+                value="female"
+                v-model="sex"
+              />
+              <label class="form-check-label" for="Female"> Female </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="gender"
+                id="male"
+                value="male"
+                v-model="sex"
+              />
+              <label class="form-check-label" for="male"> Male </label>
+            </div>
+          </div>
+          <div>
+            <label for="height">Height</label>
+            <input v-model="height" id="height" type="number" />
+          </div>
+          <div>
+            <label for="weight">Weight</label>
+            <input v-model="weight" id="weight" type="number" />
+          </div>
+          <div>
+            <label for="hair">Hair color</label>
+            <input v-model="hair" id="hair" type="text" />
+          </div>
+          <div>
+            <label for="eye">Eye color</label>
+            <input v-model="eye" id="eye" type="text" />
+          </div>
+          <div>
+            <label for="skinColor">Skin color</label>
+            <input v-model="skinColor" id="skinColor" type="text" />
+          </div>
+          <div>
+            <label for="backstory">Backstory</label>
+            <input v-model="backstory" id="backstory" type="textfield" />
+          </div>
         </div>
       </div>
       <!-- race tab -->
@@ -261,7 +286,7 @@
           }}</span>
           <span :key="ability" v-for="ability in abilityScores" class="col-2">
             <input
-              @change="setStats(ability)"
+              @change="setAbility(ability)"
               v-model="ability.value"
               type="number"
             />
@@ -299,17 +324,29 @@
             </option>
           </select>
         </div>
-        <div v-bind:key="background.name" v-for="background in backgrounds">
+        <div v-bind:key="backgroun.name" v-for="backgroun in backgrounds">
           <div class="form-check">
             <input
               class="form-check-input"
               type="radio"
               name="backgrounds"
-              v-bind:value="background.name"
-              v-model="background.name"
+              v-bind:value="backgroun.name"
+              v-model="background"
             />
             <label class="form-check-label" for="background.name">
-              {{ background.name }}
+              {{ backgroun.name }}
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="backgrounds"
+              v-bind:value="backgroun.name"
+              v-model="background"
+            />
+            <label class="form-check-label" for="background.name">
+              {{ backgroun.name }}
             </label>
           </div>
         </div>
@@ -360,12 +397,12 @@
         :key="equip"
         v-for="equip in equipments"
       >
-        <p>Select {{ equip.choose }} from the list</p>
+        <!-- <p>Select {{ equip.choose }} from the list</p>
         <div :key="item" v-for="item in equip.from">
           {{ item.equipment.name }}
           {{ item.equipment_option }}
         </div>
-        {{ equip.from[0].equipment.name }}
+        {{ equip.from[0].equipment.name }} -->
       </div>
     </div>
     <hr />
@@ -374,9 +411,11 @@
         :disabled="!this.$store.getters.loggedIn"
         class="btn btn-dark"
         type="submit"
+        @click="createCharacter()"
       >
         Create Character
       </button>
+      <button @click="test()">test</button>
     </div>
   </div>
 </template>
@@ -392,9 +431,11 @@ const url = "https://www.dnd5eapi.co/api/";
 export default {
   name: "App",
   components: {},
-  computed: mapState(["data"]),
+  computed: mapState(["data", "username"]),
   data() {
     return {
+      userId: this.$store.state.username,
+
       races: [],
       subRaces: null,
       dragonAncestory: null,
@@ -467,13 +508,29 @@ export default {
         str: 0,
         wis: 0,
       },
-      languageToolProficienciesSelection: null,
-      cantripsSelection: null,
-      equipmentSelection: null,
+      languageToolProficienciesSelection: "dwarfish",
+      cantripsSelection: "lights",
+      equipmentSelection: "longsword",
       testapi: null,
     };
   },
   methods: {
+    test() {
+      console.log(this.username[0].id);
+    },
+    getUser() {
+      axios({
+        method: "get",
+        url: "http://127.0.0.1:5050/user/",
+        headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
+      })
+        .then((response) => {
+          this.$store.state.username = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     getRaces() {
       axios({
         method: "get",
@@ -566,7 +623,6 @@ export default {
             response.data.proficiency_choices[0].choose;
         }
       });
-      console.log(this.amountOfProficiencies);
     },
     getEquipment() {
       axios({
@@ -583,68 +639,227 @@ export default {
       switch (this.raceSelection) {
         case this.races[0].name:
           //dragonborn
-          this.charStats.str += 2;
-          this.charStats.cha += 1;
+          this.characterAbilityScores.str += 2;
+          this.characterAbilityScores.cha += 1;
           break;
         case this.races[1].name:
           //dwarf
 
-          this.charStats.con += 2;
+          this.characterAbilityScores.con += 2;
           break;
         case this.races[2].name:
           //elf
 
-          this.charStats.dex += 2;
+          this.characterAbilityScores.dex += 2;
           break;
         case this.races[3].name:
           //gnome
 
-          this.charStats.int += 2;
+          this.characterAbilityScores.int += 2;
           break;
         case this.races[4].name:
           //half-elf
 
-          this.charStats.cha += 2;
+          this.characterAbilityScores.cha += 2;
           if (first === "con" || second === "con") {
-            this.charStats.con += 1;
+            this.characterAbilityScores.con += 1;
           }
           if (first === "dex" || second === "dex") {
-            this.charStats.dex += 1;
+            this.characterAbilityScores.dex += 1;
           }
           break;
         case this.races[5].name:
           //halfling
 
-          this.charStats.dex += 2;
+          this.characterAbilityScores.dex += 2;
           break;
         case this.races[6].name:
           //half-orc
 
-          this.charStats.str += 2;
-          this.charStats.con += 1;
+          this.characterAbilityScores.str += 2;
+          this.characterAbilityScores.con += 1;
           break;
         case this.races[7].name:
           //human
 
-          this.charStats.cha += 1;
-          this.charStats.con += 1;
-          this.charStats.dex += 1;
-          this.charStats.int += 1;
-          this.charStats.str += 1;
-          this.charStats.wis += 1;
+          this.characterAbilityScores.cha += 1;
+          this.characterAbilityScores.con += 1;
+          this.characterAbilityScores.dex += 1;
+          this.characterAbilityScores.int += 1;
+          this.characterAbilityScores.str += 1;
+          this.characterAbilityScores.wis += 1;
           break;
         case this.races[8].name:
           //tiefling
 
-          this.charStats.cha += 2;
-          this.charStats.int += 2;
+          this.characterAbilityScores.cha += 2;
+          this.characterAbilityScores.int += 2;
       }
+    },
+    setAbility(ability) {
+      if (ability.name.toLowerCase() === "cha") {
+        this.characterAbilityScores.cha = ability.value;
+      }
+      if (ability.name.toLowerCase() === "con") {
+        this.characterAbilityScores.con = ability.value;
+      }
+      if (ability.name.toLowerCase() === "dex") {
+        this.characterAbilityScores.dex = ability.value;
+      }
+      if (ability.name.toLowerCase() === "int") {
+        this.characterAbilityScores.int = ability.value;
+      }
+      if (ability.name.toLowerCase() === "str") {
+        this.characterAbilityScores.str = ability.value;
+      }
+      if (ability.name.toLowerCase() === "wis") {
+        this.characterAbilityScores.wis = ability.value;
+      }
+      console.log(this.characterAbilityScores);
+    },
+    savingThrows(ability) {
+      let save = 0;
+      switch (ability) {
+        case 1:
+          save = -5;
+          break;
+        case 2:
+        case 3:
+          save = -4;
+          break;
+        case 4:
+        case 5:
+          save = -3;
+          break;
+        case 6:
+        case 7:
+          save = -2;
+          break;
+        case 8:
+        case 9:
+          save = -1;
+          break;
+        case 10:
+        case 11:
+          save = 0;
+          break;
+        case 12:
+        case 13:
+          save = 1;
+          break;
+        case 14:
+        case 15:
+          save = 2;
+          break;
+        case 16:
+        case 17:
+          save = 3;
+          break;
+        case 18:
+        case 19:
+          save = 4;
+          break;
+        case 20:
+        case 21:
+          save = 5;
+          break;
+        case 22:
+        case 23:
+          save = 6;
+          break;
+        case 24:
+        case 25:
+          save = 7;
+          break;
+        case 26:
+        case 27:
+          save = 8;
+          break;
+        case 28:
+        case 29:
+          save = 9;
+          break;
+        case 30:
+          save = 10;
+      }
+      return save;
+    },
+    proficiencyBonus() {
+      for (let i = 0; i < this.chosenProficiencies.length; i++) {
+        switch (this.chosenProficiencies[i]) {
+          case Object.keys(this.proficiencies.cha[0])[0]:
+            this.proficiencies.cha[0].Deception += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[1])[0]:
+            this.proficiencies.cha[1].Intimidation += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[2])[0]:
+            this.proficiencies.cha[2].Performance += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[3])[0]:
+            this.proficiencies.cha[3].Persuasion += 3;
+            break;
+          // End of cha
+          case Object.keys(this.proficiencies.dex[0])[0]:
+            this.proficiencies.dex[0].Acrobatics += 3;
+            break;
+          case Object.keys(this.proficiencies.dex[1])[0]:
+            this.proficiencies.dex[1]["Sleight of Hand"] += 3;
+            break;
+          case Object.keys(this.proficiencies.dex[2])[0]:
+            this.proficiencies.dex[2].Stealth += 3;
+            break;
+          // End of dex
+          case Object.keys(this.proficiencies.int[0])[0]:
+            this.proficiencies.int[0].Arcana += 3;
+            break;
+          case Object.keys(this.proficiencies.int[1])[0]:
+            this.proficiencies.int[1].History += 3;
+            break;
+          case Object.keys(this.proficiencies.int[2])[0]:
+            this.proficiencies.int[2].Investigation += 3;
+            break;
+          case Object.keys(this.proficiencies.int[3])[0]:
+            this.proficiencies.int[3].Nature += 3;
+            break;
+          case Object.keys(this.proficiencies.int[4])[0]:
+            this.proficiencies.int[4].Religion += 3;
+            break;
+          //end of int
+          case Object.keys(this.proficiencies.str[0])[0]:
+            this.proficiencies.str[0].Athletics += 3;
+            console.log("strength chack");
+            break;
+          //end of str
+          case Object.keys(this.proficiencies.wis[0])[0]:
+            this.proficiencies.wis[0]["Animal Handling"] += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[1])[0]:
+            this.proficiencies.wis[1].Insight += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[2])[0]:
+            this.proficiencies.wis[2].Medicine += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[3])[0]:
+            this.proficiencies.wis[3].Perception += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[4])[0]:
+            this.proficiencies.wis[4].Survival += 3;
+            break;
+        }
+      }
+    },
+    convertToString(list) {
+      let newList = list.join();
+      return newList;
     },
     createCharacter() {
       axios({
         method: "post",
-        url: "http://127.0.0.1:8000/characters/",
+        url: "http://127.0.0.1:5050/characters/",
+        headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
         data: {
+          user: this.username[0].id,
           name: this.name,
           characterLevel: this.characterLevel,
           age: this.age,
@@ -666,18 +881,20 @@ export default {
           classSelection: this.classSelection,
           subClassSelection: this.subClassSelection,
           alignmentSelection: this.alignmentSelection,
-          chosenProficiencies: this.proficiencySelection,
-          cha: this.abilityScores.cha,
-          con: this.abilityScores.con,
-          dex: this.abilityScores.dex,
-          int: this.abilityScores.int,
-          str: this.abilityScores.str,
-          wis: this.abilityScores.wis,
+          chosenProficiencies: this.convertToString(this.proficiencySelection),
+          cha: this.characterAbilityScores.cha,
+          con: this.characterAbilityScores.con,
+          dex: this.characterAbilityScores.dex,
+          int: this.characterAbilityScores.int,
+          str: this.characterAbilityScores.str,
+          wis: this.characterAbilityScores.wis,
           languageToolProficienciesSelection:
-            languageToolProficienciesSelection,
-          cantripsSelection: cantripsSelection,
-          equipment: equipmentSelection,
+            this.languageToolProficienciesSelection,
+          cantripsSelection: this.cantripsSelection,
+          equipment: this.equipmentSelection,
         },
+      }).then(() => {
+        this.$router.push({ name: "CharacterSheet" });
       });
     },
   },
@@ -687,6 +904,7 @@ export default {
     this.getAbilityScores();
     this.getAlignments();
     this.getBackgrounds();
+    this.getUser();
 
     axios({
       method: "get",
