@@ -29,3 +29,10 @@ class CreateUserView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
+
+class CharacterDetails(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field='name'
+    # permission_classes = (IsAuthenticated,)
+    queryset = Character.objects.all()
+    serializer_class = CharacterSerializer
+    

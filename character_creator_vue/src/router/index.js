@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import Logout from '../views/Logout.vue'
 import CharacterSheet from '../views/CharacterSheet.vue'
 import SignUp from '../views/SignUp.vue'
+import CharacterDetail from '../views/CharacterDetail.vue'
 
 const routes = [
   {
@@ -28,6 +29,12 @@ const routes = [
     path: '/character-sheet',
     name: 'character-sheet',
     component: CharacterSheet
+  },
+  {
+    path: '/details/:characterName',
+    name: 'details',
+    props: true,
+    component: CharacterDetail
   },
   {
     path: '/sign-up',

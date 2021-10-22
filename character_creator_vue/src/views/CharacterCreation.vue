@@ -661,11 +661,21 @@ export default {
           //half-elf
 
           this.characterAbilityScores.cha += 2;
+
           if (first === "con" || second === "con") {
             this.characterAbilityScores.con += 1;
           }
           if (first === "dex" || second === "dex") {
             this.characterAbilityScores.dex += 1;
+          }
+          if (first === "int" || second === "int") {
+            this.characterAbilityScores.int += 1;
+          }
+          if (first === "str" || second === "str") {
+            this.characterAbilityScores.str += 1;
+          }
+          if (first === "wis" || second === "wis") {
+            this.characterAbilityScores.wis += 1;
           }
           break;
         case this.races[5].name:
@@ -854,6 +864,7 @@ export default {
       return newList;
     },
     createCharacter() {
+      this.raceBonus();
       axios({
         method: "post",
         url: "http://127.0.0.1:5050/characters/",

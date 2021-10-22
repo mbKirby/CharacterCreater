@@ -2,10 +2,9 @@
   <div>
     <p>you made it</p>
     <div :key="character" v-for="character in data">
-      {{ character.name }}
-    </div>
-    <div :key="character" v-for="character in test">
-      {{ character.username }}
+      <router-link :to="`/details/${character.name}`">
+        {{ character.name }}
+      </router-link>
     </div>
     <div>hello {{ test }}</div>
     <button @click="testing()">test</button>

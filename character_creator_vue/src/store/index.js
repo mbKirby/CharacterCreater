@@ -10,6 +10,7 @@ export default createStore({
     refreshToken: null,
     data: '',
     username: '',
+    character: '',
     test: null,
   },
   plugins:
@@ -26,6 +27,7 @@ export default createStore({
       state.accessToken = null
       state.refreshToken = null
       state.username = null
+      state.data = null
     },
   },
   getters: {
@@ -34,7 +36,7 @@ export default createStore({
     }
   },
   actions: {
-    refreshToken() {
+    refreshToken(context) {
       return new Promise((resolve, reject) => {
         getAPI.post("/api-token-refresh/", {
           refresh: context.state.refreshToken
