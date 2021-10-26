@@ -1,5 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <img src="" alt="party inside tavern" />
     <div class="container-fluid">
       <a class="navbar-brand" href="#"></a>
       <!-- <h3 v-if="this.$store.getters.loggedIn">

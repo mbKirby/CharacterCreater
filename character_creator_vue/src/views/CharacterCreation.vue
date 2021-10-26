@@ -633,6 +633,73 @@ export default {
       });
       console.log(this.equipment);
     },
+    savingThrows(ability) {
+      let save = 0;
+      switch (ability) {
+        case 1:
+          save = -5;
+          break;
+        case 2:
+        case 3:
+          save = -4;
+          break;
+        case 4:
+        case 5:
+          save = -3;
+          break;
+        case 6:
+        case 7:
+          save = -2;
+          break;
+        case 8:
+        case 9:
+          save = -1;
+          break;
+        case 10:
+        case 11:
+          save = 0;
+          break;
+        case 12:
+        case 13:
+          save = 1;
+          break;
+        case 14:
+        case 15:
+          save = 2;
+          break;
+        case 16:
+        case 17:
+          save = 3;
+          break;
+        case 18:
+        case 19:
+          save = 4;
+          break;
+        case 20:
+        case 21:
+          save = 5;
+          break;
+        case 22:
+        case 23:
+          save = 6;
+          break;
+        case 24:
+        case 25:
+          save = 7;
+          break;
+        case 26:
+        case 27:
+          save = 8;
+          break;
+        case 28:
+        case 29:
+          save = 9;
+          break;
+        case 30:
+          save = 10;
+      }
+      return save;
+    },
     raceBonus() {
       let first = this.halfElfAbilities[0];
       let second = this.halfElfAbilities[1];
@@ -727,73 +794,6 @@ export default {
       }
       console.log(this.characterAbilityScores);
     },
-    savingThrows(ability) {
-      let save = 0;
-      switch (ability) {
-        case 1:
-          save = -5;
-          break;
-        case 2:
-        case 3:
-          save = -4;
-          break;
-        case 4:
-        case 5:
-          save = -3;
-          break;
-        case 6:
-        case 7:
-          save = -2;
-          break;
-        case 8:
-        case 9:
-          save = -1;
-          break;
-        case 10:
-        case 11:
-          save = 0;
-          break;
-        case 12:
-        case 13:
-          save = 1;
-          break;
-        case 14:
-        case 15:
-          save = 2;
-          break;
-        case 16:
-        case 17:
-          save = 3;
-          break;
-        case 18:
-        case 19:
-          save = 4;
-          break;
-        case 20:
-        case 21:
-          save = 5;
-          break;
-        case 22:
-        case 23:
-          save = 6;
-          break;
-        case 24:
-        case 25:
-          save = 7;
-          break;
-        case 26:
-        case 27:
-          save = 8;
-          break;
-        case 28:
-        case 29:
-          save = 9;
-          break;
-        case 30:
-          save = 10;
-      }
-      return save;
-    },
     proficiencyBonus() {
       for (let i = 0; i < this.chosenProficiencies.length; i++) {
         switch (this.chosenProficiencies[i]) {
@@ -859,11 +859,15 @@ export default {
         }
       }
     },
+    armorClass() {
+      this.armorClass = 10 + this.savingThrows(this.characterAbilityScores.dex);
+    },
     convertToString(list) {
       let newList = list.join();
       return newList;
     },
     createCharacter() {
+      this.armorClass();
       this.raceBonus();
       axios({
         method: "post",
