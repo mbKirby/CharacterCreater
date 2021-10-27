@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button @click="addProficiencies">test</button>
     <div class="text-center">
       <p class="fs-2">
         {{ character.name }} Level:{{ character.characterLevel }}
@@ -15,10 +16,10 @@
       <p class="fs-4">Alignment: {{ character.alignmentSelection }}</p>
     </div>
 
-    <div class="tect-center">
-      <div>AC: {{ character.armorClass }}</div>
-      <div>Initiative: {{ savingThrows(character.dex) }}</div>
-      <div>Speed {{ character.Speed }}</div>
+    <div class="text-center">
+      <span>AC: {{ character.armorClass }}</span>
+      <span>Initiative: {{ savingThrows(character.dex) }}</span>
+      <span>Speed {{ character.Speed }}</span>
     </div>
 
     <div class="row text-center">
@@ -94,6 +95,7 @@
         </div>
       </div>
     </div>
+    <button @click="deleteCharacter">delete</button>
   </div>
 </template>
 <script>
@@ -132,7 +134,7 @@ export default {
   },
   methods: {
     getCharacter() {
-      axios({
+      return axios({
         method: "get",
         url: "http://127.0.0.1:5050/characters/" + `${this.characterName}`,
         headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
@@ -211,9 +213,122 @@ export default {
       }
       return save;
     },
+    addProficiencies() {
+      let characterProficiencies =
+        this.character.chosenProficiencies.split(",");
+      console.log(characterProficiencies);
+      console.log(characterProficiencies[1]);
+      console.log(Object.keys(this.proficiencies.str[0])[0]);
+      if (
+        Object.keys(this.proficiencies.str[0])[0] === characterProficiencies[1]
+      ) {
+        console.log("equal");
+      }
+      // console.log((this.proficiencies.str[0].Athletics += 3));
+      for (let i = 0; i < characterProficiencies.length; i++) {
+        switch (characterProficiencies[i]) {
+          case Object.keys(this.proficiencies.cha[0])[0]:
+            this.proficiencies.cha[0].Deception += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[1])[0]:
+            this.proficiencies.cha[1].Intimidation += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[2])[0]:
+            this.proficiencies.cha[2].Performance += 3;
+            break;
+          case Object.keys(this.proficiencies.cha[3])[0]:
+            this.proficiencies.cha[3].Persuasion += 3;
+            break;
+          // End of cha
+          case Object.keys(this.proficiencies.dex[0])[0]:
+            this.proficiencies.dex[0].Acrobatics += 3;
+            break;
+          case Object.keys(this.proficiencies.dex[1])[0]:
+            this.proficiencies.dex[1]["Sleight of Hand"] += 3;
+            break;
+          case Object.keys(this.proficiencies.dex[2])[0]:
+            this.proficiencies.dex[2].Stealth += 3;
+            break;
+          // End of dex
+          case Object.keys(this.proficiencies.int[0])[0]:
+            this.proficiencies.int[0].Arcana += 3;
+            break;
+          case Object.keys(this.proficiencies.int[1])[0]:
+            this.proficiencies.int[1].History += 3;
+            break;
+          case Object.keys(this.proficiencies.int[2])[0]:
+            this.proficiencies.int[2].Investigation += 3;
+            break;
+          case Object.keys(this.proficiencies.int[3])[0]:
+            this.proficiencies.int[3].Nature += 3;
+            break;
+          case Object.keys(this.proficiencies.int[4])[0]:
+            this.proficiencies.int[4].Religion += 3;
+            break;
+          //end of int
+          case Object.keys(this.proficiencies.str[0])[0]:
+            this.proficiencies.str[0].Athletics += 3;
+            console.log("strength chack");
+            break;
+          //end of str
+          case Object.keys(this.proficiencies.wis[0])[0]:
+            this.proficiencies.wis[0]["Animal Handling"] += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[1])[0]:
+            this.proficiencies.wis[1].Insight += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[2])[0]:
+            this.proficiencies.wis[2].Medicine += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[3])[0]:
+            this.proficiencies.wis[3].Perception += 3;
+            break;
+          case Object.keys(this.proficiencies.wis[4])[0]:
+            this.proficiencies.wis[4].Survival += 3;
+            break;
+        }
+      }
+    },
+    deleteCharacter() {
+      axios({
+        method: "delete",
+        url: "http://127.0.0.1:5050/characters/" + `${this.characterName}`,
+        headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
+      }).then(() => {
+        this.$router.push({ name: "character-sheet" });
+      });
+    },
+    saveCharacter() {
+      axios({
+        method: "patch",
+        url: "http://127.0.0.1:5050/characters/" + `${this.characterName}`,
+        headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
+        data: {
+          characterLevel: character.characterLevel,
+          age: character.age,
+          armorClass: character.armorClass,
+          hitPoints: character.hitPoints,
+          Speed: character.Speed,
+          passivePerception: character.passivePerception,
+          darkVision: character.darkVision,
+          alignmentSelection: character.alignmentSelection,
+          cha: character.characterAbilityScores.cha,
+          con: character.characterAbilityScores.con,
+          dex: character.characterAbilityScores.dex,
+          int: character.characterAbilityScores.int,
+          str: character.characterAbilityScores.str,
+          wis: character.characterAbilityScores.wis,
+          languageToolProficienciesSelection:
+            character.languageToolProficienciesSelection,
+          cantripsSelection: character.cantripsSelection,
+          equipment: character.equipmentSelection,
+        },
+      });
+    },
   },
-  mounted() {
-    this.getCharacter();
+  mounted() {},
+  created() {
+    this.getCharacter().then(() => this.addProficiencies());
   },
 };
 </script>

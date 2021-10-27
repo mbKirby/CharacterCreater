@@ -415,7 +415,7 @@
       >
         Create Character
       </button>
-      <button @click="test()">test</button>
+      <button @click="test">test</button>
     </div>
   </div>
 </template>
@@ -516,7 +516,9 @@ export default {
   },
   methods: {
     test() {
-      console.log(this.username[0].id);
+      this.$store.dispatch("userLogout").then(() => {
+        this.$router.push({ name: "CharacterSheet" });
+      });
     },
     getUser() {
       axios({
@@ -794,80 +796,15 @@ export default {
       }
       console.log(this.characterAbilityScores);
     },
-    proficiencyBonus() {
-      for (let i = 0; i < this.chosenProficiencies.length; i++) {
-        switch (this.chosenProficiencies[i]) {
-          case Object.keys(this.proficiencies.cha[0])[0]:
-            this.proficiencies.cha[0].Deception += 3;
-            break;
-          case Object.keys(this.proficiencies.cha[1])[0]:
-            this.proficiencies.cha[1].Intimidation += 3;
-            break;
-          case Object.keys(this.proficiencies.cha[2])[0]:
-            this.proficiencies.cha[2].Performance += 3;
-            break;
-          case Object.keys(this.proficiencies.cha[3])[0]:
-            this.proficiencies.cha[3].Persuasion += 3;
-            break;
-          // End of cha
-          case Object.keys(this.proficiencies.dex[0])[0]:
-            this.proficiencies.dex[0].Acrobatics += 3;
-            break;
-          case Object.keys(this.proficiencies.dex[1])[0]:
-            this.proficiencies.dex[1]["Sleight of Hand"] += 3;
-            break;
-          case Object.keys(this.proficiencies.dex[2])[0]:
-            this.proficiencies.dex[2].Stealth += 3;
-            break;
-          // End of dex
-          case Object.keys(this.proficiencies.int[0])[0]:
-            this.proficiencies.int[0].Arcana += 3;
-            break;
-          case Object.keys(this.proficiencies.int[1])[0]:
-            this.proficiencies.int[1].History += 3;
-            break;
-          case Object.keys(this.proficiencies.int[2])[0]:
-            this.proficiencies.int[2].Investigation += 3;
-            break;
-          case Object.keys(this.proficiencies.int[3])[0]:
-            this.proficiencies.int[3].Nature += 3;
-            break;
-          case Object.keys(this.proficiencies.int[4])[0]:
-            this.proficiencies.int[4].Religion += 3;
-            break;
-          //end of int
-          case Object.keys(this.proficiencies.str[0])[0]:
-            this.proficiencies.str[0].Athletics += 3;
-            console.log("strength chack");
-            break;
-          //end of str
-          case Object.keys(this.proficiencies.wis[0])[0]:
-            this.proficiencies.wis[0]["Animal Handling"] += 3;
-            break;
-          case Object.keys(this.proficiencies.wis[1])[0]:
-            this.proficiencies.wis[1].Insight += 3;
-            break;
-          case Object.keys(this.proficiencies.wis[2])[0]:
-            this.proficiencies.wis[2].Medicine += 3;
-            break;
-          case Object.keys(this.proficiencies.wis[3])[0]:
-            this.proficiencies.wis[3].Perception += 3;
-            break;
-          case Object.keys(this.proficiencies.wis[4])[0]:
-            this.proficiencies.wis[4].Survival += 3;
-            break;
-        }
-      }
-    },
-    armorClass() {
+    setArmorClass() {
       this.armorClass = 10 + this.savingThrows(this.characterAbilityScores.dex);
     },
-    convertToString(list) {
-      let newList = list.join();
+    convertToString(array) {
+      let newList = array.join();
       return newList;
     },
     createCharacter() {
-      this.armorClass();
+      this.setArmorClass();
       this.raceBonus();
       axios({
         method: "post",
@@ -908,9 +845,13 @@ export default {
           cantripsSelection: this.cantripsSelection,
           equipment: this.equipmentSelection,
         },
-      }).then(() => {
-        this.$router.push({ name: "CharacterSheet" });
-      });
+      })
+        .then(() => {
+          this.$router.push({ name: "character-sheet" });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   created() {

@@ -6,6 +6,7 @@
         {{ character.name }}
       </router-link>
     </div>
+
     <button @click="testing()">test</button>
   </div>
 </template>

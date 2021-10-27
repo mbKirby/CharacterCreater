@@ -1,20 +1,17 @@
 <template>
-  <div>
+  <div class="container">
     <div>
       <img
-        style="height: auto width:100%"
+        style="height: auto"
         class="img-fluid"
-        src="CharacterCreator\character_creator_vue\src\assets\navbarpic3.jpgCharacterCreator\character_creator_vue\src\assets\navbarpic3.jpg"
+        src="https://github.com/mbKirby/CharacterCreator/blob/main/character_creator_vue/src/assets/navbarpic.jpg?raw=true"
         alt="party inside tavern"
       />
     </div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div>
+    <nav class="col-12 navbar navbar-expand-lg navbar-light bg-light">
+      <div class="col-12">
         <div class="container-fluid">
           <a class="navbar-brand" href="#"></a>
-          <!-- <h3 v-if="this.$store.getters.loggedIn">
-        Hello, {{ username[0].username }}
-      </h3> -->
 
           <button
             class="navbar-toggler"
@@ -28,34 +25,25 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="col-12 justify-content-evenly navbar-nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Home</a>
-              </li>
-              <li v-if="!this.$store.getters.loggedIn" class="nav-item">
-                <a class="nav-link active" aria-current="page" href="Login"
-                  >Login</a
-                >
+                <router-link to="/">Create Character</router-link>
               </li>
 
               <li v-if="!this.$store.getters.loggedIn" class="nav-item">
-                <a class="nav-link active" aria-current="page" href="sign-up"
-                  >Sign Up</a
-                >
-              </li>
-              <li v-if="this.$store.getters.loggedIn">
-                <a
-                  class="nav-link active"
-                  aria-current="page"
-                  href="character-sheet"
-                  >Characters</a
-                >
+                <router-link to="login">Login</router-link>
               </li>
 
-              <li v-if="this.$store.getters.loggedIn">
-                <a class="nav-link active" aria-current="page" href="Logout"
-                  >Log out</a
-                >
+              <li v-if="!this.$store.getters.loggedIn" class="nav-item">
+                <router-link to="sign-up">Sign Up</router-link>
+              </li>
+
+              <li v-if="this.$store.getters.loggedIn" class="nav-item">
+                <router-link to="/character-sheet">Characters</router-link>
+              </li>
+
+              <li v-if="this.$store.getters.loggedIn" class="nav-item">
+                <router-link to="/logout">Logout</router-link>
               </li>
             </ul>
           </div>
@@ -65,29 +53,23 @@
   </div>
 </template>
 
+<style>
+router-link {
+  text-decoration: none;
+}
+</style>
+
 <script>
 import axios from "axios";
 import { mapState } from "vuex";
 export default {
   name: "Navbar",
-  computed: mapState(["data", "username"]),
+  computed: mapState(["data"]),
   methods: {
-    // getUser() {
-    //   axios({
-    //     method: "get",
-    //     url: "http://127.0.0.1:5050/user/",
-    //     headers: { Authorization: `Bearer ${this.$store.state.accessToken}` },
-    //   })
-    //     .then((response) => {
-    //       this.$store.state.username = response.data;
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // },
+    logout() {
+      this.$router.push({ name: "logout" });
+    },
   },
-  created() {
-    // this.getUser();
-  },
+  created() {},
 };
 </script>
