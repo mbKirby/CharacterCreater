@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <p>you made it</p>
     <div :key="character" v-for="character in data">
       <router-link :to="`/details/${character.name}`">

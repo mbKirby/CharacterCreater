@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <div>
-      <img
+      <!-- <img
         style="height: auto"
         class="img-fluid"
         src="https://github.com/mbKirby/CharacterCreator/blob/main/character_creator_vue/src/assets/navbarpic.jpg?raw=true"
         alt="party inside tavern"
-      />
+      /> -->
     </div>
     <nav class="col-12 navbar navbar-expand-lg navbar-light bg-light">
       <div class="col-12">
@@ -52,12 +52,6 @@
     </nav>
   </div>
 </template>
-
-<style>
-router-link {
-  text-decoration: none;
-}
-</style>
 
 <script>
 import axios from "axios";

@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <nav>
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <div
+        class="justify-content-evenly nav nav-tabs"
+        id="nav-tab"
+        role="tablist"
+      >
         <button
           class="nav-link active"
           id="character-tab"
@@ -115,70 +119,99 @@
         role="tabpanel"
         aria-labelledby="character-tab"
       >
-        <div>
-          {{ userId }}
-          {{ username }}
-          <div>
-            <label for="name">Name</label>
-            <input v-model="name" id="name" type="text" />
-          </div>
-          <div>
-            <label for="characterLevel">Level</label>
-            <input v-model="characterLevel" id="characterLevel" type="number" />
-          </div>
-          <div>
-            <label for="age">Age</label>
-            <input v-model="age" id="age" type="number" />
-          </div>
-          <div>
-            <label for="gender">Gender </label>
-            <div class="form-check form-check-inline">
+        <div lass="row">
+          <form class="">
+            <div class="py-1 row justify-content-evenly">
+              <div class="row justify-content-evenly">
+                <label class="col-2 pe-1" for="name">Character Name</label>
+                <label class="col-2" for="characterLevel">Level</label>
+              </div>
+              <input class="col-2" v-model="name" id="name" type="text" />
               <input
-                class="form-check-input"
-                type="radio"
-                name="gender"
-                id="Female"
-                value="female"
-                v-model="sex"
+                class="col-2"
+                v-model="characterLevel"
+                id="characterLevel"
+                type="number"
               />
-              <label class="form-check-label" for="Female"> Female </label>
             </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="gender"
-                id="male"
-                value="male"
-                v-model="sex"
-              />
-              <label class="form-check-label" for="male"> Male </label>
+
+            <div class="py-1">
+              <div class="row justify-content-evenly">
+                <label class="col-2 pe-1" for="age">Age</label>
+                <label class="col-2 pe-1" for="skinColor">Skin color</label>
+              </div>
+              <span class="row justify-content-evenly">
+                <input class="col-2" v-model="age" id="age" type="number" />
+                <input
+                  class="col-2"
+                  v-model="skinColor"
+                  id="skinColor"
+                  type="text"
+                />
+              </span>
             </div>
-          </div>
-          <div>
-            <label for="height">Height</label>
-            <input v-model="height" id="height" type="number" />
-          </div>
-          <div>
-            <label for="weight">Weight</label>
-            <input v-model="weight" id="weight" type="number" />
-          </div>
-          <div>
-            <label for="hair">Hair color</label>
-            <input v-model="hair" id="hair" type="text" />
-          </div>
-          <div>
-            <label for="eye">Eye color</label>
-            <input v-model="eye" id="eye" type="text" />
-          </div>
-          <div>
-            <label for="skinColor">Skin color</label>
-            <input v-model="skinColor" id="skinColor" type="text" />
-          </div>
-          <div>
-            <label for="backstory">Backstory</label>
-            <input v-model="backstory" id="backstory" type="textfield" />
-          </div>
+
+            <div class="py-1 row justify-content-evenly">
+              <div class="row justify-content-evenly">
+                <label class="col-2 pe-1" for="height">Height</label>
+                <label class="col-2 pe-1" for="weight">Weight</label>
+              </div>
+              <input class="col-2" v-model="weight" id="weight" type="number" />
+              <input class="col-2" v-model="height" id="height" type="number" />
+            </div>
+
+            <div class="py-1 row justify-content-evenly">
+              <div class="row justify-content-evenly">
+                <label class="col-2 pe-1" for="hair">Hair color</label>
+                <label class="col-2 pe-1" for="eye">Eye color</label>
+              </div>
+              <input class="col-2" v-model="hair" id="hair" type="text" />
+              <input class="col-2" v-model="eye" id="eye" type="text" />
+            </div>
+
+            <div class="py-1 text-center">
+              <div>
+                <label class="col-2" for="gender">Gender </label>
+              </div>
+              <div>
+                <div class="form-check form-check-inline ms-2">
+                  <label class="form-check-label" for="Female">Female</label>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="Female"
+                    value="female"
+                    v-model="sex"
+                  />
+                </div>
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" for="male"> Male </label>
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="male"
+                    value="male"
+                    v-model="sex"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="py-1 text-center">
+              <div>
+                <label class="col-2" for="backstory">Backstory</label>
+              </div>
+              <div class="row justify-content-center">
+                <textarea
+                  class="form-control col-5 text-center"
+                  v-model="backstory"
+                  name="backstory"
+                  id="backstory"
+                ></textarea>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <!-- race tab -->
@@ -189,7 +222,11 @@
         aria-labelledby="race-tab"
       >
         <label for="races">Select your characters race.</label>
-        <div v-bind:key="race.name" v-for="race in races">
+        <div
+          class="row justify-content-center"
+          v-bind:key="race.name"
+          v-for="race in races"
+        >
           <div class="form-check">
             <input
               class="form-check-input"
@@ -204,7 +241,7 @@
             </label>
           </div>
         </div>
-
+        <hr />
         <div class="" v-if="subRaces">
           <label for="subRaceSelection">Select Subrace</label>
           <select
@@ -275,7 +312,7 @@
       </div>
       <!-- Ability Scores tab -->
       <div
-        class="tab-pane fade"
+        class="tab-pane fade row justify-content-evenly"
         id="abilityScores"
         role="tabpanel"
         aria-labelledby="abilityScores-tab"
@@ -470,6 +507,20 @@ export default {
           { Perception: 0 },
           { Survival: 0 },
         ],
+      },
+      hitDie: {
+        Barbarian: 12,
+        Bard: 8,
+        Cleric: 8,
+        Druid: 8,
+        Fighter: 10,
+        Monk: 8,
+        Paladin: 10,
+        Ranger: 10,
+        Rogue: 8,
+        Sorcerer: 6,
+        Warlock: 8,
+        Wizard: 6,
       },
       proficiencyChoices: null,
       amountOfProficiencies: 1,
@@ -799,11 +850,17 @@ export default {
     setArmorClass() {
       this.armorClass = 10 + this.savingThrows(this.characterAbilityScores.dex);
     },
+    setHitPoints() {
+      this.hitPoints =
+        this.hitDie[`${this.classSelection}`] +
+        this.savingThrows(this.characterAbilityScores.con);
+    },
     convertToString(array) {
       let newList = array.join();
       return newList;
     },
     createCharacter() {
+      this.setHitPoints();
       this.setArmorClass();
       this.raceBonus();
       axios({
@@ -824,6 +881,7 @@ export default {
           backstory: this.backstory,
           armorClass: this.armorClass,
           hitPoints: this.hitPoints,
+          currentHitPoints: this.hitPoints,
           Speed: this.Speed,
           passivePerception: this.passivePerception,
           darkVision: this.darkVision,

@@ -1,20 +1,44 @@
 <template>
-  <div>
-    <form v-on:submit.prevent="signup">
+  <div class="row justify-content-center">
+    <form class="text-center col-6 border mt-2" v-on:submit.prevent="signup">
       <p v-if="!match">Your Password doesn't match please try again.</p>
-      <div>
-        <label for="username">username</label>
-        <input v-model="username" id="username" type="text" />
+      <h2>SignUp</h2>
+      <div class="form-group my-1">
+        <input
+          type="text"
+          name="username"
+          id="username"
+          v-model="username"
+          class="form-control"
+          placeholder="Username"
+        />
       </div>
-      <div>
-        <label for="password">Password</label>
-        <input v-model="password1" id="password1" type="password" />
+      <div class="form-group my-1">
+        <input
+          type="password"
+          name="password1"
+          id="password1"
+          v-model="password1"
+          class="form-control"
+          placeholder="Password"
+        />
       </div>
-      <div>
-        <label for="password">Re-enter Password</label>
-        <input v-model="password2" id="password2" type="password" />
+      <div class="form-group my-1">
+        <input
+          type="password"
+          name="password2"
+          id="password2"
+          v-model="password2"
+          class="form-control"
+          placeholder="Re-enter password"
+        />
       </div>
-      <button type="submit">Sign Up</button>
+      <button class="btn-primary btn my-1" type="submit">Sign Up</button>
+      <div>
+        <router-link class="my-1" to="login"
+          >Already have an account sign in here.</router-link
+        >
+      </div>
     </form>
   </div>
 </template>

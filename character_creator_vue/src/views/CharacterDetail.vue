@@ -1,26 +1,57 @@
 <template>
-  <div>
-    <button @click="addProficiencies">test</button>
+  <div class="container">
+    <button @click="roll_dice(hitDie[`${clas}`])">test</button>
+    <p>roll:{{ roll }}</p>
+    <p>{{ hitDie.Barbarian }} {{ clas }} {{ hitDie[`${clas}`] }}</p>
     <div class="text-center">
       <p class="fs-2">
         {{ character.name }} Level:{{ character.characterLevel }}
       </p>
       <p class="fs-4">
-        Race: {{ character.raceSelection }} SubRace:
-        {{ character.subRaceSelection }}
+        Race: {{ character.raceSelection }}
+        <span v-if="character.subRaceSelection">
+          SubRace: {{ character.subRaceSelection }}
+        </span>
       </p>
       <p class="fs-4">
-        Class: {{ character.classSelection }} SubClass:
-        {{ character.subClassSelection }}
+        Class: {{ character.classSelection }}
+        <span v-if="character.subClassSelection">
+          SubClass: {{ character.subClassSelection }}
+        </span>
       </p>
       <p class="fs-4">Alignment: {{ character.alignmentSelection }}</p>
     </div>
 
-    <div class="text-center">
-      <span>AC: {{ character.armorClass }}</span>
-      <span>Initiative: {{ savingThrows(character.dex) }}</span>
-      <span>Speed {{ character.Speed }}</span>
+    <div class="text-center border row">
+      <div class="row justify-content-evenly">
+        <span class="col-3">
+          <p class="fs-4">AC: {{ character.armorClass }}</p>
+        </span>
+        <span class="col-3">
+          <p class="fs-4">Initiative: {{ savingThrows(character.dex) }}</p>
+        </span>
+        <span class="col-3">
+          <p class="fs-4">Speed: {{ character.Speed }}</p>
+        </span>
+      </div>
+      <div>
+        <p class="fs-4">
+          Max Hit Points:
+          {{ character.hitPoints }}
+        </p>
+        <p class="fs-4">
+          Current Hit Points:
+          <input
+            type="number"
+            name="currentHP"
+            id="currentHP"
+            :value="character.currentHitPoints"
+          />
+        </p>
+      </div>
     </div>
+
+    <div></div>
 
     <div class="row text-center">
       <div class="col border">
@@ -104,6 +135,8 @@ export default {
   props: ["characterName"],
   data() {
     return {
+      clas: "",
+      currentHitPoints: [],
       character: {},
       proficiencies: {
         cha: [
@@ -129,6 +162,21 @@ export default {
           { Perception: 0 },
           { Survival: 0 },
         ],
+      },
+      roll: 1,
+      hitDie: {
+        Barbarian: 12,
+        Bard: 8,
+        Cleric: 8,
+        Druid: 8,
+        Fighter: 10,
+        Monk: 8,
+        Paladin: 10,
+        Ranger: 10,
+        Rogue: 8,
+        Sorcerer: 6,
+        Warlock: 8,
+        Wizard: 6,
       },
     };
   },
@@ -214,6 +262,7 @@ export default {
       return save;
     },
     addProficiencies() {
+      this.clas = this.character.classSelection;
       let characterProficiencies =
         this.character.chosenProficiencies.split(",");
       console.log(characterProficiencies);
@@ -308,6 +357,7 @@ export default {
           age: character.age,
           armorClass: character.armorClass,
           hitPoints: character.hitPoints,
+          currentHitPoints: this.currentHitPoints,
           Speed: character.Speed,
           passivePerception: character.passivePerception,
           darkVision: character.darkVision,
@@ -324,6 +374,12 @@ export default {
           equipment: character.equipmentSelection,
         },
       });
+    },
+    roll_dice(type_of_dice) {
+      let roll = 0;
+      let min = 1;
+      roll = Math.floor(Math.random() * type_of_dice + min);
+      this.roll = roll;
     },
   },
   mounted() {},

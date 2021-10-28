@@ -1,10 +1,11 @@
 <template>
-  <div>
-    <p v-if="incorrectAuth">
-      Incorrect username or password entered - please try again
-    </p>
-    <form v-on:submit.prevent="login">
-      <div class="form-group">
+  <div class="row justify-content-center">
+    <form class="text-center col-6 border mt-2" v-on:submit.prevent="login">
+      <p v-if="incorrectAuth">
+        Incorrect username or password entered - please try again
+      </p>
+      <h2>Login</h2>
+      <div class="form-group my-1">
         <input
           type="text"
           name="username"
@@ -14,7 +15,7 @@
           placeholder="Username"
         />
       </div>
-      <div class="form-group">
+      <div class="form-group my-1">
         <input
           type="password"
           name="password"
@@ -24,7 +25,12 @@
           placeholder="Password"
         />
       </div>
-      <button type="submit">Login</button>
+      <button class="btn-primary btn my-1" type="submit">Login</button>
+      <div>
+        <router-link class="my-1" to="sign-up"
+          >No account sign up here.</router-link
+        >
+      </div>
     </form>
   </div>
 </template>
