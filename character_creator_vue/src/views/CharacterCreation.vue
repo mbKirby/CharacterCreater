@@ -234,7 +234,7 @@
               name="races"
               v-bind:value="race.name"
               v-model="raceSelection"
-              @change="getSubRace"
+              @change="getSubRace()"
             />
             <label class="form-check-label" for="race.name">
               {{ race.name }}
@@ -275,6 +275,7 @@
         role="tabpanel"
         aria-labelledby="class-tab"
       >
+        <p>Select characters class.</p>
         <div v-bind:key="clas.name" v-for="clas in classes">
           <div class="form-check">
             <input
@@ -287,6 +288,7 @@
                 getSubClass();
                 getProficiencyChoices();
                 getEquipment();
+                getSpells();
               "
             />
             <label class="form-check-label" for="clas.name">
@@ -295,6 +297,7 @@
           </div>
         </div>
         <hr />
+        <p>Select character sub class.</p>
         <div v-bind:key="subClass.name" v-for="subClass in subClasses">
           <div class="form-check">
             <input
@@ -374,18 +377,29 @@
               {{ backgroun.name }}
             </label>
           </div>
+        </div>
+        <div>
           <div class="form-check">
             <input
               class="form-check-input"
               type="radio"
               name="backgrounds"
-              v-bind:value="backgroun.name"
+              v-bind:value="'Custom'"
               v-model="background"
             />
             <label class="form-check-label" for="background.name">
-              {{ backgroun.name }}
+              Custom
             </label>
           </div>
+        </div>
+        <div v-if="background === 'Custom'">
+          Enter your backgrounds name.
+          <input
+            v-model="customBackground"
+            type="text"
+            name="customBackground"
+            id="customBackground"
+          />
         </div>
       </div>
       <!-- proficiency tab -->
@@ -397,7 +411,7 @@
       >
         <div>
           <p v-if="proficiencyChoices">
-            Select {{ amountOfProficiencies }} Proficiencies
+            Select {{ amountOfProficiencies }} proficiencies.
           </p>
           <span :key="proficiency" v-for="proficiency in proficiencyChoices">
             <input
@@ -415,6 +429,27 @@
             }}</label>
           </span>
         </div>
+        <div v-if="background != 'Acolyte' || null">
+          <p>Background: {{ customBackground }}</p>
+          <p>Select 2 proficiencies for your characters background.</p>
+          <span :key="proficiency" v-for="proficiency in proficiencies">
+            <span :key="skill" v-for="skill in proficiency">
+              <input
+                class="mx-2"
+                type="checkbox"
+                v-bind:value="Object.keys(skill)[0]"
+                v-model="backgroundProficiencySelection"
+                v-bind:disabled="
+                  backgroundProficiencySelection.length === 2 &&
+                  backgroundProficiencySelection.indexOf(
+                    Object.keys(skill)[0]
+                  ) == -1
+                "
+              />
+              <label for="skill">{{ Object.keys(skill)[0] }}</label>
+            </span>
+          </span>
+        </div>
       </div>
       <!-- Spells tab -->
       <div
@@ -423,7 +458,49 @@
         role="tabpanel"
         aria-labelledby="spells-tab"
       >
-        spells
+        <div v-if="classSelection">
+          <div v-if="knownSpellCasters.includes(classSelection)">
+            <p>
+              Besides cantrips a {{ classSelection }} does not need to select
+              known spells. They can prepare any spell available in their list
+            </p>
+          </div>
+          <div
+            class="row"
+            v-else-if="selectSpellCasters.includes(classSelection)"
+          >
+            <p>Select {{ amountOfSpells.spells_known }} spells to learn.</p>
+            <span
+              class="col-12 col-sm-6 col-md-4"
+              :key="spell"
+              v-for="spell in spells"
+            >
+              <input
+                class="mx-2"
+                type="checkbox"
+                v-bind:value="spell.name"
+                v-model="selectedSpells"
+                v-bind:disabled="
+                  selectedSpells.length === amountOfSpells.spells_known &&
+                  selectedSpells.indexOf(spell.name) == -1
+                "
+              />
+              <label for="skill">{{ spell.name }}</label>
+            </span>
+          </div>
+          <div v-else-if="!spellCasters.includes(classSelection)">
+            No spells to learn.
+          </div>
+        </div>
+        <!-- <p>Select cantrips</p>
+          <p :key="spell" v-for="spell in spells">
+            {{ spell.name }}
+          </p>
+        </div> -->
+        <!-- <div v-if="spellCasters.includes(classSelection)">
+          <div>Cantrips known: {{ spells[0].spellcasting.cantrips_known }}</div>
+          <div>Spells known: {{ spells[0].spellcasting.spells_known }}</div>
+        </div> -->
       </div>
       <!-- Equipment tab -->
       <div
@@ -522,12 +599,17 @@ export default {
         Warlock: 8,
         Wizard: 6,
       },
+      knownSpellCasters: ["Cleric", "Druid"],
+      selectSpellCasters: ["Bard", "Sorcerer", "Warlock", "Wizard"],
       proficiencyChoices: null,
       amountOfProficiencies: 1,
+      amountOfSpells: 0,
       languageToolProficiencies: null,
       cantrips: null,
+      spells: null,
       equipments: null,
       item: null,
+      Custom: null,
 
       name: null,
       characterLevel: 1,
@@ -545,12 +627,15 @@ export default {
       passivePerception: 1,
       darkVision: 1,
       background: null,
+      customBackground: null,
       raceSelection: null,
       subClassSelection: null,
       classSelection: null,
       subRaceSelection: null,
       alignmentSelection: null,
       proficiencySelection: [],
+      backgroundProficiencySelection: [],
+      allProficiencies: [],
       characterAbilityScores: {
         cha: 0,
         con: 0,
@@ -559,18 +644,15 @@ export default {
         str: 0,
         wis: 0,
       },
-      languageToolProficienciesSelection: "dwarfish",
       cantripsSelection: "lights",
+      selectedSpells: [],
+      languageToolProficienciesSelection: "dwarfish",
       equipmentSelection: "longsword",
       testapi: null,
     };
   },
   methods: {
-    test() {
-      this.$store.dispatch("userLogout").then(() => {
-        this.$router.push({ name: "CharacterSheet" });
-      });
-    },
+    test() {},
     getUser() {
       axios({
         method: "get",
@@ -594,24 +676,28 @@ export default {
     },
 
     getSubRace() {
+      console.log("do things");
       this.subRaces = null;
       if (this.raceSelection === "Dragonborn") {
         axios({
           method: "get",
           url: url + "traits/draconic-ancestry",
         }).then((response) => {
+          console.log("dragon worked");
           this.dragonAncestory =
             response.data.trait_specific.subtrait_options.from;
           if (this.dragonAncestory.length < 1) {
             this.dragonAncestory = null;
           }
         });
+        console.log(this.dragonAncestory);
       } else {
         this.dragonAncestory = null;
         axios({
           method: "get",
           url: url + "races/" + this.raceSelection.toLowerCase() + "/subraces",
         }).then((response) => {
+          console.log("other worked");
           this.subRaces = response.data.results;
           if (this.subRaces.length < 1) {
             this.subRaces = null;
@@ -675,6 +761,34 @@ export default {
           this.amountOfProficiencies =
             response.data.proficiency_choices[0].choose;
         }
+      });
+    },
+    getSpells() {
+      this.selectedSpells = [];
+      axios({
+        method: "get",
+        url:
+          url +
+          `classes/${this.classSelection.toLowerCase()}/levels/${
+            this.characterLevel
+          }/spells`,
+      })
+        .then((response) => {
+          this.spells = response.data.results;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.spells = null;
+        });
+      axios({
+        method: "get",
+        url:
+          url +
+          `classes/${this.classSelection.toLowerCase()}/levels/${
+            this.characterLevel
+          }`,
+      }).then((response) => {
+        this.amountOfSpells = response.data.spellcasting;
       });
     },
     getEquipment() {
@@ -847,6 +961,15 @@ export default {
       }
       console.log(this.characterAbilityScores);
     },
+    getSpeed() {
+      axios({
+        method: "get",
+        url: url + "races/" + this.raceSelection.toLowerCase(),
+      }).then((response) => {
+        this.speed = response.data.speed;
+      });
+      console.log(this.equipment);
+    },
     setArmorClass() {
       this.armorClass = 10 + this.savingThrows(this.characterAbilityScores.dex);
     },
@@ -859,7 +982,16 @@ export default {
       let newList = array.join();
       return newList;
     },
+    setProficiencies() {
+      if (this.background === "Acolyte") {
+        this.backgroundProficiencySelection = ["Religion", "Insight"];
+      }
+      this.allProficiencies = this.proficiencySelection.concat(
+        this.backgroundProficiencySelection
+      );
+    },
     createCharacter() {
+      this.setProficiencies();
       this.setHitPoints();
       this.setArmorClass();
       this.raceBonus();
@@ -891,7 +1023,7 @@ export default {
           classSelection: this.classSelection,
           subClassSelection: this.subClassSelection,
           alignmentSelection: this.alignmentSelection,
-          chosenProficiencies: this.convertToString(this.proficiencySelection),
+          chosenProficiencies: this.convertToString(this.allProficiencies),
           cha: this.characterAbilityScores.cha,
           con: this.characterAbilityScores.con,
           dex: this.characterAbilityScores.dex,

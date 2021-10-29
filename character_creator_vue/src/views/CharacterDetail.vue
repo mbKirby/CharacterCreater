@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <button @click="roll_dice(hitDie[`${clas}`])">test</button>
+    <!-- <button @click="roll_dice(hitDie[`${clas}`])">test</button>
     <p>roll:{{ roll }}</p>
-    <p>{{ hitDie.Barbarian }} {{ clas }} {{ hitDie[`${clas}`] }}</p>
+    <p>{{ hitDie.Barbarian }} {{ clas }} {{ hitDie[`${clas}`] }}</p> -->
     <div class="text-center">
       <p class="fs-2">
         {{ character.name }} Level:{{ character.characterLevel }}
@@ -25,21 +25,21 @@
     <div class="text-center border row">
       <div class="row justify-content-evenly">
         <span class="col-3">
-          <p class="fs-4">AC: {{ character.armorClass }}</p>
+          <p class="fs-5">AC: {{ character.armorClass }}</p>
         </span>
         <span class="col-3">
-          <p class="fs-4">Initiative: {{ savingThrows(character.dex) }}</p>
+          <p class="fs-5">Initiative: {{ savingThrows(character.dex) }}</p>
         </span>
         <span class="col-3">
-          <p class="fs-4">Speed: {{ character.Speed }}</p>
+          <p class="fs-5">Speed: {{ character.Speed }}</p>
         </span>
       </div>
       <div>
-        <p class="fs-4">
+        <p class="fs-5">
           Max Hit Points:
           {{ character.hitPoints }}
         </p>
-        <p class="fs-4">
+        <p class="fs-5">
           Current Hit Points:
           <input
             type="number"
@@ -126,7 +126,13 @@
         </div>
       </div>
     </div>
-    <button @click="deleteCharacter">delete</button>
+
+    <div class="row justify-content-evenly mt-3">
+      <button class="btn-primary btn col-2" @click="saveCharacter">Save</button>
+      <button class="btn-primary btn col-2" @click="deleteCharacter">
+        Delete
+      </button>
+    </div>
   </div>
 </template>
 <script>
@@ -273,7 +279,6 @@ export default {
       ) {
         console.log("equal");
       }
-      // console.log((this.proficiencies.str[0].Athletics += 3));
       for (let i = 0; i < characterProficiencies.length; i++) {
         switch (characterProficiencies[i]) {
           case Object.keys(this.proficiencies.cha[0])[0]:
